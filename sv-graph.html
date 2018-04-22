@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  <script type="text/javascript" src="/js/lib/dummy.js"></script>
+
+  
+
+  
+
+  
+
+  
+    <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+  
+
+  
+    
+      <script type="text/javascript" src="https://unpkg.com/vue@latest/dist/vue.js"></script>
+    
+  
+
+  <style type="text/css">
+    body {
+    font-family: Helvetica Neue, Arial, sans-serif;
+}
+
+polygon {
+    fill: #42b983;
+    opacity: .75;
+}
+
+circle {
+    fill: transparent;
+    stroke: #999;
+}
+
+text {
+    font-family: Helvetica Neue, Arial, sans-serif;
+    font-size: 10px;
+    fill: #666;
+}
+
+label {
+    display: inline-block;
+    margin-left: 10px;
+    width: 20px;
+}
+
+#raw {
+    position: absolute;
+    top: 0;
+    left: 300px;
+}
+  </style>
+
+  <title></title>
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+window.onload=function(){
+
+
+valueToPoint = function(value, index, total) {
+  var x     = 0
+  var y     = -value * 0.8
+  var angle = Math.PI * 2 / total * index
+  var cos   = Math.cos(angle)
+  var sin   = Math.sin(angle)
+  var tx    = x * cos - y * sin + 100
+  var ty    = x * sin + y * cos + 100
+  return {
+    x: tx,
+    y: ty
+  }
+}
+
+Vue.component("polygon-demo", {
+	template: "#polygon-template",
+	props: ['stats'],
+  computed: {
+  	points: function() {
+    	var str = "";
+      var self = this;
+      this.stats.forEach(function(stat, index) {
+      	var point = valueToPoint(stat.value, index, self.stats.length);
+        str += point.x + "," + point.y + " ";
+      })
+      return str.trim();
+    }
+  },
+  components: {
+  	'axis-label': {
+    	template: "#axis-label-template",
+      props: ['stat', 'index', 'length'],
+      computed: {
+      	coords: function() {
+        	return valueToPoint(this.stat.value + 10, this.index, this.length);
+        }
+      }
+    }
+  }
+});
+
+var vm = new Vue({
+ el: "#demo",
+ data: {
+ 	newStat: null,
+ 	stats: [
+  	{label: "A", value: 100}, 
+    {label: "B", value: 100}, 
+    {label: "C", value: 100}, 
+    {label: "D", value: 100}, 
+    {label: "E", 	value: 100}, 
+    {label: "F", value: 100}
+   ]
+ }, 
+ methods: {
+ 	remove: function(index) {
+  	this.stats.splice(index, 1);
+  },
+  add: function() {
+  	if (this.newStat && this.newStat.length > 0) {
+    	this.stats.push({label: this.newStat, value: 100});
+    }
+  }
+ }
+});
+
+}
+
+
+
+
+</script>
+
+  
+</head>
+
+<body>
+  <script type="text/x-template" id="polygon-template">
+	<svg width="200" height="200">
+  	<polygon :points="points" />
+    <circle cx="100" cy="100" r="80"></circle>
+    <template v-for="(stat, index) in stats">
+    	<axis-label :stat="stat" :index="index" :length="stats.length"></axis-label>
+    </template>
+  </svg>
+</script>
+<script type="text/x-template" id="axis-label-template">
+	<text :x="coords.x" :y="coords.y">{{stat.label}}</text>
+</script>
+<body>
+  <div id="demo">
+    <polygon-demo :stats="stats"></polygon-demo>
+    <div v-for="(stat, index) in stats">
+      <label>{{stat.label}}</label>
+      <input type="range" min="0" max="100" v-model="stat.value" />
+      <button class="remove" @click="remove(index)">X</button>
+    </div>
+    <div id="add">
+      <input name="newStat" v-model="newStat" />
+      <button @click="add">Add a Stat</button>
+    </div>
+    <pre id="raw">{{ stats }}</pre>
+  </div>
+</body>
+  
+  <script>
+  // tell the embed parent frame the height of the content
+  if (window.parent && window.parent.parent){
+    window.parent.parent.postMessage(["resultsFrame", {
+      height: document.body.getBoundingClientRect().height,
+      slug: "None"
+    }], "*")
+  }
+</script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  <script type="text/javascript" src="/js/lib/dummy.js"></script>
+
+  
+
+  
+
+  
+
+  
+    <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+  
+
+  
+    
+      <link rel="stylesheet" type="text/css" href="https://unpkg.com/todomvc-app-css@2.0.6/index.css">
+    
+  
+    
+      <script type="text/javascript" src="https://unpkg.com/vue@latest/dist/vue.js"></script>
+    
+  
+
+  <style type="text/css">
+    [v-cloak] { display: none; }
+  </style>
+
+  <title></title>
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+window.onload=function(){
+
+var STORAGE_KEY = 'todos-vuejs-2.1';
+
+var vm = new Vue({
+	el: "#demo",
+  data: {
+  	todos: null,
+    newTodo: null,
+    tab: 'all',
+    toggle: false,
+    editedTodo: {}
+  },
+  created: function() {
+  	this.todos = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]');
+  },
+  methods: {
+  	addTodo: function() {
+    	if (this.newTodo && this.newTodo.trim().length) {
+      	var id = this.todos.length ? this.todos[this.todos.length - 1].id + 1 : 0; 
+      	this.todos.push({id: id, name: this.newTodo, completed: false});
+      	this.newTodo = null;
+        this.toggle = false;
+      }
+    },
+    editTodo: function(todo) {
+    	this.editedTodo = Object.assign({}, todo);
+    },
+    updateTodo: function(todo, e) {
+    	todo.name = this.editedTodo.name;
+      this.editedTodo = {};
+      e.target.blur();
+    }, 
+    discardEdit: function(e) {
+    	this.editedTodo = {};
+      e.target.blur();
+    },
+    removeTodo: function(index) {
+    	this.todos.splice(index, 1);
+    },
+    removeCompleted: function() {
+    	this.todos = this.filterTodos(false);
+    },
+    setTab: function(tab) {
+    	this.tab = tab;
+    },
+    filterTodos: function(isCompleted) {
+    	return this.todos.filter(function(todo) { 
+        return todo.completed == isCompleted;
+      });
+    },
+    toggleAll: function() {
+    	var self = this;
+    	this.todos.forEach(function(todo) {
+      	todo.completed = self.toggle;
+      });
+    },
+    isEditing: function(todo) {
+    	return this.editedTodo && (todo.id == this.editedTodo.id);
+    },
+    updateStorage: function() {
+    	 window.localStorage.setItem(STORAGE_KEY, JSON.stringify(this.todos));
+    }
+  }, 
+  computed: {
+  	filteredTodos: function() {
+    	if (this.tab == 'all') {
+      	return this.todos;
+      } else {
+      	var filter = (this.tab == 'completed');
+      	return this.filterTodos(filter);
+      } 
+    },
+  	active: function() {
+    	return this.filterTodos(false);
+    },
+  },
+  watch: {
+  	todos: {
+    	handler: function() {
+    		this.updateStorage();
+      }, 
+      deep: true
+    }
+  },
+  directives: {
+  	'focus-input': function(el, binding) {
+    	if (binding.value) {
+      	el.focus();
+      }
+    }
+  }
+})
+
+}
+
+
+
+
+</script>
+
+  
+</head>
+
+<body>
+  <section id="demo" class="todoapp">
+  <header class=header>
+    <h1>todos</h1>
+    <input placeholder="What needs to be done?" class="new-todo" v-model="newTodo" @keyup.enter="addTodo"/>  
+  </header>
+  <section class="main">
+    <input type="checkbox" class="toggle-all" v-model="toggle" @change="toggleAll">
+    <ul class="todo-list">
+      <li v-for="(todo, index) in filteredTodos" class="todo" :class="{completed: todo.completed, editing: isEditing(todo)}">
+        <div class="view">
+          <input type="checkbox" class="toggle" v-model="todo.completed">
+          <label @dblclick="editTodo(todo)">{{todo.name}}</label>
+          <button class="destroy" @click="removeTodo(index)"></button>
+        </div>
+        <input
+          type="text" class="edit"
+          v-focus-input="isEditing(todo)" 
+          v-model="editedTodo.name" 
+          @keyup.enter="updateTodo(todo, $event)"
+          @keyup.esc="discardEdit($event)"/>
+      </li>
+    </ul>
+  </section>
+  <footer class="footer" v-show="todos.length">
+    <span class="todo-count" v-show="active.length">
+      <strong>{{active.length}}</strong> {{active.length == 1 ? 'item left' : 'items left'}}
+    </span>
+    <ul class="filters">
+      <li><a href="#/all" :class="{selected: tab == 'all'}" @click="setTab('all')">All</a></li>
+      <li><a href="#/active" :class="{selected: tab == 'active'}" @click="setTab('active')">Active</a></li>
+      <li><a href="#/completed" :class="{selected: tab == 'completed'}" @click="setTab('completed')">Completed</a></li>
+    </ul>
+    <button v-show="filterTodos(true).length" class="clear-completed" @click="removeCompleted()">Clear completed</button>
+  </footer>
+</section>
+  
+  <script>
+  // tell the embed parent frame the height of the content
+  if (window.parent && window.parent.parent){
+    window.parent.parent.postMessage(["resultsFrame", {
+      height: document.body.getBoundingClientRect().height,
+      slug: "None"
+    }], "*")
+  }
+</script>
+
+</body>
+
+</html>
+

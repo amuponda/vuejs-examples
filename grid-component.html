@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  <script type="text/javascript" src="/js/lib/dummy.js"></script>
+
+  
+
+  
+
+  
+
+  
+    <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+  
+
+  
+    
+      <script type="text/javascript" src="https://unpkg.com/vue@latest/dist/vue.js"></script>
+    
+  
+
+  <style type="text/css">
+    body {
+  font-family: Helvetica Neue, Arial, sans-serif;
+  font-size: 14px;
+  color: #444;
+}
+
+table {
+  border: 2px solid #42b983;
+  border-radius: 3px;
+  background-color: #fff;
+}
+
+th {
+  background-color: #42b983;
+  color: rgba(255,255,255,0.66);
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+td {
+  background-color: #f9f9f9;
+}
+
+th, td {
+  min-width: 120px;
+  padding: 10px 20px;
+}
+
+th.active {
+  color: #fff;
+}
+
+th.active .arrow {
+  opacity: 1;
+}
+
+.arrow {
+  display: inline-block;
+  vertical-align: middle;
+  width: 0;
+  height: 0;
+  margin-left: 5px;
+  opacity: 0.66;
+}
+
+.arrow.asc {
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 4px solid #fff;
+}
+
+.arrow.dsc {
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid #fff;
+}
+
+  </style>
+
+  <title></title>
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+window.onload=function(){
+
+Vue.component("grid-demo", {
+	template: "#grid-template",
+	props: ['dataSet', 'cols', 'query'],
+  data: function() {
+  	return {
+    	data: Object.assign([], this.dataSet),
+      columns: Object.assign([], this.cols),
+      active: null
+    }
+  },
+	created: function() {
+  	this.columns.forEach(function(col) {
+    	col.asc = true;
+    });
+  },
+  methods: {
+  	setActive: function(col) {
+    	this.active = col.field;
+    },
+    sort: function(col) {
+    	this.setActive(col);
+      //sorts desc
+      this.data.sort(function(a, b) {
+      	if (a[col.field] < b[col.field]) { 
+        	return 1; 
+        } if (a[col.field] > b[col.field]) {
+        	return -1;
+        }
+        return 0;
+      })
+      if (col.asc) {
+      	this.data.reverse();
+        col.asc = false;
+      } else {
+      	col.asc = true;
+      }
+    }
+  },
+  computed: {
+  	filteredData: function() {
+    	if (this.query.length == 0) { return this.data; }
+    	var self = this;
+    	return this.data.filter(function (datum) {
+      		return self.columns.find(function(col) {
+          	return datum[col.field].includes(self.query);
+          });
+      });
+    }
+  }
+});
+
+var vm = new Vue({
+	el: "#demo",
+  data: {
+  	query: "",
+    dataSet: [{name: "Chuck Norris", power: "Infinity"}, {name: "Bruce Lee", power: "9000"}],
+    columns: [{title: "Name", field: "name"}, {title: "Power", field: "power"}]
+  }
+});
+
+}
+
+
+
+
+</script>
+
+  
+</head>
+
+<body>
+  <script type="text/x-template" id="grid-template">
+	<table>
+  	<thead>
+    	<th v-for="column in columns" :class="{active: active == column.field}" @click=sort(column)>
+      	{{column.title}}
+        <span class="arrow" :class="[column.asc ? 'dsc' : 'asc']"></span>
+      </th>
+    </thead>
+    <tbody>
+    	<tr v-for="row in filteredData">
+      	<td v-for="column in columns">{{row[column.field]}}</td>
+      </tr>
+    </tbody>
+  </table>
+</script>
+
+<body>
+  <div id="demo">
+    <label>Search</label><input v-model="query" />
+    <grid-demo :query="query" :data-set="dataSet" :cols="columns"></grid-demo>
+  </div>  
+</body>
+
+  
+  <script>
+  // tell the embed parent frame the height of the content
+  if (window.parent && window.parent.parent){
+    window.parent.parent.postMessage(["resultsFrame", {
+      height: document.body.getBoundingClientRect().height,
+      slug: "176LsLaw"
+    }], "*")
+  }
+</script>
+
+</body>
+
+</html>
+
